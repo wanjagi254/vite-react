@@ -1,31 +1,32 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 export default function ExpenseForm({ onAddExpense }) {
-  const [title, setTitle] = useState('')
-  const [amount, setAmount] = useState('')
-  const [date, setDate] = useState('')
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     
-    if (!title || !amount || !date) return
+    if (!title || !amount || !date) return;
 
-    onAddExpense({
+    const expenseData = {
       title,
       amount: +amount,
       date: new Date(date),
-      id: Math.random().toString()
-    })
+      id: crypto.randomUUID()
+    };
 
-    // Reset form
-    setTitle('')
-    setAmount('')
-    setDate('')
-  }
+    onAddExpense(expenseData);
+    setTitle('');
+    setAmount('');
+    setDate('');
+  };
 
   return (
     <form onSubmit={handleSubmit} className="expense-form">
-      <div className="form-control">
+      <h2>Add New Expense</h2>
+      <div className="form-group">
         <label>Title</label>
         <input
           type="text"
@@ -34,8 +35,8 @@ export default function ExpenseForm({ onAddExpense }) {
           required
         />
       </div>
-      <div className="form-control">
-        <label>Amount</label>
+      <div className="form-group">
+        <label>Amount ($)</label>
         <input
           type="number"
           min="0.01"
@@ -45,7 +46,7 @@ export default function ExpenseForm({ onAddExpense }) {
           required
         />
       </div>
-      <div className="form-control">
+      <div className="form-group">
         <label>Date</label>
         <input
           type="date"
@@ -58,5 +59,5 @@ export default function ExpenseForm({ onAddExpense }) {
       </div>
       <button type="submit">Add Expense</button>
     </form>
-  )
+  );
 }

@@ -1,32 +1,54 @@
-import { useState } from 'react'
-import ExpenseForm from './assets/ExpenseForm'
-import ExpenseList from './assets/ExpenseList'
-import ExpenseFilter from './assets/ExpenseFilter'
-import './styles.css'
+import { useState, useEffect } from 'react';
+import ExpenseForm from './assets/ExpenseForm';
+import ExpenseTable from './assets/ExpenseTable';
+import SearchBar from './assets/SearchBar';
+import './styles.css';
 
 export default function App() {
-  const [expenses, setExpenses] = useState([])
-  const [filterYear, setFilterYear] = useState('2023')
+  const [expenses, setExpenses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Load from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('expenses');
+    if (saved) {
+      setExpenses(JSON.parse(saved).map(exp => ({
+        ...exp,
+        date: new Date(exp.date)
+      })));
+    }
+  }, []);
+
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+  }, [expenses]);
 
   const addExpense = (newExpense) => {
-    setExpenses(prev => [newExpense, ...prev])
-  }
+    setExpenses(prev => [newExpense, ...prev]);
+  };
 
-  const filteredExpenses = expenses.filter(
-    expense => expense.date.getFullYear().toString() === filterYear
-  )
+  const deleteExpense = (id) => {
+    setExpenses(prev => prev.filter(expense => expense.id !== id));
+  };
+
+  const filteredExpenses = expenses.filter(expense => 
+    expense.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.amount.toString().includes(searchTerm) ||
+    expense.date.toISOString().includes(searchTerm)
+  );
 
   return (
     <div className="app">
       <h1>Expense Tracker</h1>
-      <ExpenseForm onAddExpense={addExpense} />
-      <div className="expenses-container">
-        <ExpenseFilter
-          selectedYear={filterYear}
-          onChangeYear={setFilterYear}
+      <div className="container">
+        <ExpenseForm onAddExpense={addExpense} />
+        <SearchBar onSearch={setSearchTerm} />
+        <ExpenseTable 
+          expenses={filteredExpenses} 
+          onDelete={deleteExpense} 
         />
-        <ExpenseList expenses={filteredExpenses} />
       </div>
     </div>
-  )
+  );
 }
