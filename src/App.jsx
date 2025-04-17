@@ -8,7 +8,7 @@ export default function App() {
   const [expenses, setExpenses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Load from localStorage
+  
   useEffect(() => {
     const saved = localStorage.getItem('expenses');
     if (saved) {
@@ -19,7 +19,7 @@ export default function App() {
     }
   }, []);
 
-  // Save to localStorage
+  
   useEffect(() => {
     localStorage.setItem('expenses', JSON.stringify(expenses));
   }, [expenses]);
